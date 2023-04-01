@@ -1,0 +1,19 @@
+{
+  "scripts": {
+    "go": "ts-node --esm ./src/go.ts",
+    "prettier": "prettier --write . --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0",
+    "liquidjs": "^10.7.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/node": "^18.15.10",
+    "prettier": "^2.8.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}
