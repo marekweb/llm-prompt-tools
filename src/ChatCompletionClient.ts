@@ -53,7 +53,6 @@ async function makeChatCompletionRequest(
     throw new Error("Missing API key");
   }
   const url = new URL("/v1/chat/completions", OPENAI_API_URL);
-  console.log(`POST ${url}\n\n${JSON.stringify(request, null, 2)}\n`);
   const response = await fetch(url, {
     method: "POST",
     headers: {
