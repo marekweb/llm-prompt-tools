@@ -113,7 +113,7 @@ wss.on("connection", (ws) => {
           break;
         }
         connectionContext.socket.push(ws);
-        connectionContext.lastActive = Date.now(); // TODO: make this per-socket.
+        connectionContext.lastActive = Date.now();
         ws.send(
           JSON.stringify({
             id: data.id,
