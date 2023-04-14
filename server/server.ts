@@ -15,7 +15,14 @@ interface SocketConnection {
   lastActive: number;
 }
 
-type HandleMessageFromClient = (message: SocketMessageFromClient) => void;
+type OptionallyAsync<F> = F extends (...args: infer A) => infer T
+  ? (...args: A) => Promise<Awaited<T>> | Awaited<T>
+  : never;
+
+type HandleMessageFromClient = (
+  conversationId: string,
+  message: SocketMessageFromClient
+) => void;
 type SendMessageToClient = (
   conversationId: string,
   message: SocketMessageFromServer
@@ -23,9 +30,11 @@ type SendMessageToClient = (
 
 interface CreateServerOptions {
   port: number;
-  createConversation: (agentId: string, message: string) => Promise<string>;
-  getConversation: (conversationId: string) => Promise<Message[]>;
-  handleMessage: HandleMessageFromClient;
+  createConversation: OptionallyAsync<
+    (agentId: string, message: string) => string
+  >;
+  getConversation: (conversationId: string) => Promise<null | Message[]>;
+  handleMessage: OptionallyAsync<HandleMessageFromClient>;
 }
 
 interface ConversationServer {
@@ -58,15 +67,13 @@ export function createConversationServer(
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
-    // Handle incoming message
-
     const socketConnectionRecord: SocketConnection = {
       socket: ws,
       lastActive: Date.now(),
     };
     connections.push(socketConnectionRecord);
 
-    ws.on("message", (rawMessage) => {
+    ws.on("message", async (rawMessage) => {
       socketConnectionRecord.lastActive = Date.now();
       const message = parseSocketMessageFromClient(rawMessage.toString());
       if (!message) {
@@ -86,9 +93,11 @@ export function createConversationServer(
               message.content
             );
             socketConnectionRecord.conversationId = conversationId;
-            // TODO: We could reply something here, like the
-            // conversation ID, but instead we wait until there's an
-            // actual message to send.
+            // TODO: We could reply something here, like the conversation ID,
+            // but instead we wait until there's an actual message to send.
+            // TODO: createConversation could return an object that contains an
+            // immediate value (the conversation ID) and a promise (the first
+            // message from the assistant).
             return;
           }
 
@@ -100,6 +109,8 @@ export function createConversationServer(
             });
             return;
           }
+
+          options.handleMessage(message.conversationId, message);
       }
     });
     // Handle client disconnection
