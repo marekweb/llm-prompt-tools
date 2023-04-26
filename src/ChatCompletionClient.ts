@@ -20,7 +20,7 @@ interface ChatCompletionResponse {
     completion_tokens: number;
     total_tokens: number;
   };
-  choices: {
+  choices?: {
     message: Message;
     finish_reason: "stop" | "length" | "content_filter" | "null";
     index: number;
@@ -38,7 +38,11 @@ interface ChatCompletionOptions {
 }
 
 function getLastMessageFromResponse(response: ChatCompletionResponse): Message {
-  return response.choices[0]?.message;
+  const choices = response.choices;
+  if (!choices) {
+    throw new Error("No choices returned");
+  }
+  return choices[0]?.message;
 }
 
 function getLastMessageContent(response: ChatCompletionResponse): string {

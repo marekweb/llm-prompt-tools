@@ -14,6 +14,6 @@ export function getEnv(name: string, defaultValue: string): string {
 }
 
 export async function loadData(filename: string): Promise<unknown> {
-  const body = await fs.readFile(filename + ".yml", "utf8");
+  const body = await fs.readFile("data/" + filename + ".yml", "utf8");
   return yaml.load(body);
 }
