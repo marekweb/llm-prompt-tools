@@ -1,13 +1,26 @@
 import { Message } from "./Message";
+import type { JSONSchema4 } from "json-schema";
 
 const OPENAI_API_URL = "https://api.openai.com";
 const DEFAULT_TEMPERATURE = 0;
+
+export interface ChatCompletionFunction {
+  name: string;
+  description?: string;
+
+  /**
+   * A JSON Schema object
+   */
+  parameters?: JSONSchema4;
+}
 
 interface ChatCompletionRequest {
   model: string;
   messages: Message[];
   temperature?: number;
   stop?: string[];
+  functions?: ChatCompletionFunction[];
+  function_call?: "auto" | "none" | string;
 }
 
 interface ChatCompletionResponse {
@@ -22,19 +35,26 @@ interface ChatCompletionResponse {
   };
   choices?: {
     message: Message;
-    finish_reason: "stop" | "length" | "content_filter" | "null";
+    finish_reason:
+      | "stop"
+      | "length"
+      | "content_filter"
+      | "function_call"
+      | "null";
     index: number;
   }[];
 }
 
 interface ChatCompletionClientOptions {
   apiKey: string;
-  model: "gpt-3.5-turbo";
+  model: string;
 }
 interface ChatCompletionOptions {
   temperature?: number;
   stop?: string[];
   topP?: number;
+  functions?: ChatCompletionFunction[];
+  function_call?: "auto" | "none" | string;
 }
 
 function getLastMessageFromResponse(response: ChatCompletionResponse): Message {
@@ -57,6 +77,9 @@ async function makeChatCompletionRequest(
     throw new Error("Missing API key");
   }
   const url = new URL("/v1/chat/completions", OPENAI_API_URL);
+  console.log("--- Making request ---  ");
+  console.log(JSON.stringify(request, null, 2));
+  console.log("--- End of request ---  ");
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -67,6 +90,9 @@ async function makeChatCompletionRequest(
     body: JSON.stringify(request),
   });
   const data = (await response.json()) as ChatCompletionResponse;
+  console.log("--- Response ---  ");
+  console.log(JSON.stringify(data, null, 2));
+  console.log("--- End of response ---  ");
   return data;
 }
 
@@ -74,15 +100,15 @@ export class ChatCompletionClient {
   private model: string;
   private openaiApiKey: string;
   // TODO put these in an object
-  private temperature: number;
-  private stop: string[] | undefined;
+  private defaultCompletionOptions: ChatCompletionOptions;
 
-  constructor(options: ChatCompletionClientOptions & ChatCompletionOptions) {
-    this.model = options.model;
-    this.openaiApiKey = options.apiKey;
-    // Defaults
-    this.temperature = options.temperature ?? DEFAULT_TEMPERATURE;
-    this.stop = options.stop;
+  constructor(
+    clientOptions: ChatCompletionClientOptions,
+    defaultCompletionOptions?: ChatCompletionOptions
+  ) {
+    this.model = clientOptions.model;
+    this.openaiApiKey = clientOptions.apiKey;
+    this.defaultCompletionOptions = defaultCompletionOptions ?? {};
   }
 
   getChatCompletion(
@@ -92,8 +118,9 @@ export class ChatCompletionClient {
     const request: ChatCompletionRequest = {
       model: this.model,
       messages: messages,
-      temperature: options.temperature ?? this.temperature,
-      stop: options.stop ?? this.stop,
+      temperature: DEFAULT_TEMPERATURE,
+      ...this.defaultCompletionOptions,
+      ...options,
     };
     return makeChatCompletionRequest(this.openaiApiKey, request);
   }
