@@ -1,5 +1,5 @@
-import { ChatCompletionClient } from "../src/ChatCompletionClient";
-import { ChatContext } from "../src/ChatContext";
+import { ChatCompletionClient } from "./ChatCompletionClient";
+import { ChatContext } from "./ChatContext";
 import { createConversationServer } from "./server";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "dotenv";

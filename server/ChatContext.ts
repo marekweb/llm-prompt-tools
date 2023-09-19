@@ -8,12 +8,12 @@ interface FunctionCall {
 
 export class ChatContext {
   private client: ChatCompletionClient;
-  private callFunction: (fn: FunctionCall) => Promise<unknown>;
+  private callFunction: (fn: FunctionCall) => Promise<unknown> | undefined;
   public messages: Message[] = [];
 
   constructor(
     client: ChatCompletionClient,
-    callFunction: (fn: FunctionCall) => Promise<unknown>
+    callFunction?: (fn: FunctionCall) => Promise<unknown>
   ) {
     this.client = client;
     this.callFunction = callFunction;

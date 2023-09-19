@@ -65,7 +65,7 @@ function getLastMessageFromResponse(response: ChatCompletionResponse): Message {
   return choices[0]?.message;
 }
 
-function getLastMessageContent(response: ChatCompletionResponse): string {
+function getLastMessageContent(response: ChatCompletionResponse): string | null {
   return getLastMessageFromResponse(response).content;
 }
 
@@ -128,7 +128,7 @@ export class ChatCompletionClient {
   async getSingleCompletionForInput(
     userMessage: string,
     systemMessage?: string
-  ): Promise<string> {
+  ): Promise<string | null> {
     const messages: Message[] = [];
     if (systemMessage) {
       messages.push({ role: "system", content: systemMessage });

@@ -2,7 +2,7 @@ import express from "express";
 import { Server as WebSocketServer, WebSocket } from "ws";
 import { Server, createServer } from "http";
 import { AddressInfo } from "net";
-import { Message } from "../src/Message";
+import { Message } from "./Message";
 import {
   SocketMessageFromClient,
   SocketMessageFromServer,

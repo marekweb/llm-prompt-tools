@@ -1,4 +1,4 @@
-import { ChatContext } from "../src/ChatContext";
+import { ChatContext } from "./ChatContext";
 import { executeScript } from "../src/executeScript";
 import { extractCodeBlock } from "../src/extractCodeBlock";
 
