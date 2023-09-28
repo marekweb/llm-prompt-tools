@@ -3,16 +3,13 @@ import {
   ChatCompletionOptions,
   ChatCompletionResponse,
 } from "./ChatCompletionClient";
-import { Message } from "./Message";
+import { Message, MessageWithFunctionCall } from "./Message";
 
-interface FunctionCall<T = object> {
+export interface FunctionCall<T = object> {
   name: string;
   arguments: T;
 }
 
-/** By convention if the function returns a string, we follow up with a "function" role response to API. Otherwise if the function returns null then we
- *
- */
 type CallableFunction = (
   fn: FunctionCall
 ) => (string | null) | Promise<string | null | undefined>;
@@ -31,25 +28,6 @@ export class ChatContext {
     this.messages.push(message);
   }
 
-  appendMessageWithRole(
-    role: "system" | "assistant" | "user" | "function",
-    content: string
-  ) {
-    this.appendMessage({ role, content });
-  }
-
-  appendUserMessage(content: string) {
-    this.appendMessageWithRole("user", content);
-  }
-
-  appendAssistantMessage(content: string) {
-    this.appendMessageWithRole("assistant", content);
-  }
-
-  appendSystemMessage(content: string) {
-    this.appendMessageWithRole("system", content);
-  }
-
   async sendUserMessage(content: string): Promise<Message> {
     return this.sendMessageAndGetCompletion({ role: "user", content });
   }
@@ -65,7 +43,7 @@ export class ChatContext {
     );
     const responseMessage = getMessageFromResponse(response);
 
-    if (responseMessage.function_call) {
+    if (isMessageWithFunctionCall(responseMessage)) {
       const functionCallName = responseMessage.function_call.name;
       const functionCallArgumentsJSON = responseMessage.function_call.arguments;
       const functionCallArguments = JSON.parse(functionCallArgumentsJSON);
@@ -83,13 +61,14 @@ export class ChatContext {
         // Recursion in case the function returns another function call.
         return this.sendMessageAndGetCompletion({
           role: "function",
+          name: functionCallName,
           content: functionReturnValue,
         });
       }
     }
 
-    console.log("+++ Assistant:\n", message?.content);
-    return message;
+    console.log("+++ Assistant:\n", responseMessage.content);
+    return responseMessage;
   }
 
   /**
@@ -118,4 +97,10 @@ function getMessageFromResponse(response: ChatCompletionResponse): Message {
     );
   }
   return choices[0].message;
+}
+
+function isMessageWithFunctionCall(
+  message: Message
+): message is MessageWithFunctionCall {
+  return message.hasOwnProperty("function_call");
 }
