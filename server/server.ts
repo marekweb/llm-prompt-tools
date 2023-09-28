@@ -136,10 +136,13 @@ export function createConversationServer(
     res.send({ conversation });
   });
 
-  app.get("/api/conversations", (req, res) => {
-    // TODO: implement
-    res.send([]);
-  });
+  app.get(
+    "/api/conversations",
+    (req: express.Request, res: express.Response) => {
+      // TODO: implement
+      res.send([]);
+    }
+  );
 
   // Start server
   server.listen(options.port, () => {
