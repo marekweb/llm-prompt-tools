@@ -14,16 +14,12 @@ export interface ChatCompletionFunction {
   parameters?: JSONSchema4;
 }
 
-interface ChatCompletionRequest {
+interface ChatCompletionRequest extends ChatCompletionOptions {
   model: string;
   messages: Message[];
-  temperature?: number;
-  stop?: string[];
-  functions?: ChatCompletionFunction[];
-  function_call?: "auto" | "none" | string;
 }
 
-interface ChatCompletionResponse {
+export interface ChatCompletionResponse {
   id: string;
   object: string;
   created: number;
@@ -49,7 +45,7 @@ interface ChatCompletionClientOptions {
   apiKey: string;
   model: string;
 }
-interface ChatCompletionOptions {
+export interface ChatCompletionOptions {
   temperature?: number;
   stop?: string[];
   topP?: number;
@@ -65,7 +61,9 @@ function getLastMessageFromResponse(response: ChatCompletionResponse): Message {
   return choices[0]?.message;
 }
 
-function getLastMessageContent(response: ChatCompletionResponse): string | null {
+function getLastMessageContent(
+  response: ChatCompletionResponse
+): string | null {
   return getLastMessageFromResponse(response).content;
 }
 
