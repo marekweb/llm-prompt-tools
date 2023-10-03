@@ -11,7 +11,7 @@ export interface ChatCompletionFunction {
   /**
    * A JSON Schema object
    */
-  parameters?: JSONSchema4;
+  parameters?: JSONSchema4 & { type: "object" };
 }
 
 interface ChatCompletionRequest extends ChatCompletionOptions {
