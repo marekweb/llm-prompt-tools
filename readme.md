@@ -6,6 +6,8 @@ For example, it can take a long product description, and use it to extract the p
 
 It uses an LLM such as GPT-4 or GPT-3.5-Turbo to extract structured data from unstructured text. It leverages the Function Call feature of these models to instruct the model to create structured output, in the form of named parameters.
 
+<img width="1059" alt="screenshot" src="https://github.com/marekweb/llm-prompt-tools/assets/602886/e5922f81-e01a-43dc-b7f2-1a783e928163">
+
 ### Implementation
 
 The project is built in TypeScript and runs as a web application:
