@@ -95,7 +95,7 @@ export const Extract: React.FunctionComponent = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [inputText]);
+  }, [inputText, currentDefId]);
 
   if (!defs || !currentDefId) {
     return null;
@@ -158,7 +158,7 @@ const DataDisplay: React.FunctionComponent<DataDisplayProps> = ({
           <div className="border p-2 border-gray-500 rounded-lg">
             {displayField(field, data) ?? <>&nbsp;</>}
           </div>
-          {field.unit && <div className="text-sm">Unit: {field.unit}</div>}
+          {field.unit && <div className="text-sm">In {field.unit}</div>}
         </div>
       ))}
   </div>

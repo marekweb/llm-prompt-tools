@@ -13,7 +13,7 @@ const FieldEditor: React.FunctionComponent<FieldEditorProps> = (props) => {
       <SelectField
         label="Kind"
         value={props.field.kind}
-        options={["name", "price", "amount", "boolean"]}
+        options={["name", "price", "amount", "date", "boolean"]}
         onChange={(value) =>
           props.onChange({ ...props.field, kind: value }, props.index)
         }
@@ -33,7 +33,7 @@ const FieldEditor: React.FunctionComponent<FieldEditorProps> = (props) => {
         }
       />
       <TextField
-        label="Unit (optional)"
+        label="Unit or Format (optional)"
         value={props.field.unit ?? ""}
         onChange={(value) =>
           props.onChange(
