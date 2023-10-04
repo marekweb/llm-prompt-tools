@@ -5,9 +5,9 @@ import { AddressInfo } from "net";
 import { Message } from "./Message";
 import {
   SocketMessageFromClient,
-  SocketMessageFromServer,
   parseSocketMessageFromClient,
-} from "./socket-messages";
+} from "../common/SocketMessageFromClient";
+import { SocketMessageFromServer } from "../common/SocketMessageFromServer";
 
 interface SocketConnection {
   conversationId?: string;
@@ -29,7 +29,7 @@ type SendMessageToClient = (
 ) => void;
 
 interface CreateServerOptions {
-  port: number;
+  port: string | number;
   createConversation: OptionallyAsync<
     (agentId: string, message: string) => string
   >;
@@ -60,6 +60,8 @@ export function createConversationServer(
 ): ConversationServer {
   const app = express();
   const server = createServer(app);
+
+  app.use(express.json());
 
   const connections: SocketConnection[] = [];
 

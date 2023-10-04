@@ -86,9 +86,12 @@ export class ChatContext {
   }
 }
 
-function getMessageFromResponse(response: ChatCompletionResponse): Message {
+export function getMessageFromResponse(
+  response: ChatCompletionResponse
+): Message {
   const choices = response.choices;
   if (!choices) {
+    console.error("Response:", response);
     throw new Error("No choices returned in chat completion response.");
   }
   if (choices.length !== 1) {
@@ -99,7 +102,7 @@ function getMessageFromResponse(response: ChatCompletionResponse): Message {
   return choices[0].message;
 }
 
-function isMessageWithFunctionCall(
+export function isMessageWithFunctionCall(
   message: Message
 ): message is MessageWithFunctionCall {
   return message.hasOwnProperty("function_call");

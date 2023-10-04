@@ -3,7 +3,7 @@ export type Message =
   | MessageWithFunctionOutput
   | MessageWithFunctionCall;
 
-interface MessageWithContent {
+export interface MessageWithContent {
   role: "system" | "assistant" | "user";
   content: string;
 }
