@@ -4,6 +4,7 @@ import { createConversationServer } from "./server";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "dotenv";
 config();
+const port = process.env.PORT ?? 8080;
 
 const apiKey = process.env.OPENAI_API_KEY;
 if (!apiKey) {
@@ -17,7 +18,7 @@ const client = new ChatCompletionClient({
 });
 
 const server = createConversationServer({
-  port: 8080,
+  port,
   async getConversation(id: string) {
     const conversation = conversations.get(id);
     if (!conversation) {

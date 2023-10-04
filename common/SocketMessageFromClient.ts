@@ -5,13 +5,6 @@ export interface SocketMessageFromClient {
   content: string;
 }
 
-export interface SocketMessageFromServer {
-  type: "message";
-  conversationId?: string;
-  state?: "error" | "typing";
-  content?: string;
-}
-
 function isSocketMessageFromClient(
   object: unknown
 ): object is SocketMessageFromClient {

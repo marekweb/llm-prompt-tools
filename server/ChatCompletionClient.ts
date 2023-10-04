@@ -11,7 +11,7 @@ export interface ChatCompletionFunction {
   /**
    * A JSON Schema object
    */
-  parameters?: JSONSchema4 & { type: "object" };
+  parameters: JSONSchema4 & { type: "object" };
 }
 
 interface ChatCompletionRequest extends ChatCompletionOptions {
@@ -50,7 +50,14 @@ export interface ChatCompletionOptions {
   stop?: string[];
   topP?: number;
   functions?: ChatCompletionFunction[];
-  function_call?: "auto" | "none" | string;
+
+  /**
+   * Instruction for the LLM to call a function. If "auto", the LLM should pick a function.
+   * If "none", the LLM should not call a function.
+   * Otherwise, the LLM should call the function with the given name.
+   * Default is "auto" when functions are present, or "none" if no functions are present.
+   */
+  function_call?: "auto" | "none" | { name: string };
 }
 
 function getLastMessageFromResponse(response: ChatCompletionResponse): Message {
