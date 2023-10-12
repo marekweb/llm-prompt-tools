@@ -14,6 +14,7 @@ import {
   EXTRACT_SUMMARY_PROMPT,
   EXTRACT_SYSTEM_PROMPT,
 } from "./prompts";
+import { validate } from "json-schema";
 
 export class StructuralExtractor {
   private client: ChatCompletionClient;
@@ -40,6 +41,7 @@ export class StructuralExtractor {
       this.structuredDataDefinition
     );
 
+    parameters.properties = parameters.properties ?? {};
     parameters.properties.task_summary = {
       description: EXTRACT_SUMMARY_PROMPT,
       type: "string",
@@ -61,7 +63,19 @@ export class StructuralExtractor {
       throw new Error("Expected function call");
     }
     const structuredJSON = message.function_call.arguments;
-    const structuredData = JSON.parse(structuredJSON);
+    const structuredData = tryParseJson(structuredJSON);
+    const validationResult = validate(structuredData, parameters);
+    if (!validationResult.valid) {
+      throw new Error("Function call parameters do not match schema");
+    }
     return structuredData;
+  }
+}
+
+function tryParseJson(json: string): any {
+  try {
+    return JSON.parse(json);
+  } catch {
+    throw new Error("Not valid JSON in function call");
   }
 }
